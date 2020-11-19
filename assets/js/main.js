@@ -20,11 +20,15 @@ let player;
 let hearts;
 let sneezeBar;
 let cursors;
+let platforms;
+let spike;
 
 const game = new Phaser.Game(config);
 
 function preload() {
   this.load.image('building', './assets/img/background.png');
+  this.load.image('ground', './assets/img/platform.png');
+  this.load.image('spike', './assets/img/spike.png');
   this.load.image('heart', './assets/img/heart.png');
   this.load.spritesheet('sneezeBar', './assets/img/sneeze-bar.png', {
     frameWidth: 150,
@@ -43,6 +47,12 @@ function preload() {
 function create() {
   this.add.image(512, -168, 'building');
 
+  platforms = this.physics.add.staticGroup();
+  platforms.create(512, -168, 'ground');
+
+  spike = this.physics.add.staticGroup();
+  spike.create(512, -168, 'spike');
+
   hearts = this.physics.add.staticGroup({
     key: 'heart',
     repeat: 2,
@@ -52,7 +62,7 @@ function create() {
   sneezeBar = this.physics.add.staticGroup();
   sneezeBar.create(250, 30, 'sneezeBar');
 
-  player = this.physics.add.sprite(400, 550, 'sickHero');
+  player = this.physics.add.sprite(400, 600, 'sickHero');
 
   player.setBounce(0.2);
   player.setCollideWorldBounds(true);
@@ -65,8 +75,8 @@ function create() {
 
   this.anims.create({
     key: 'right',
-    frames: this.anims.generateFrameNumbers('sickHero', { start: 7, end: 8 }),
-    frameRate: 5,
+    frames: this.anims.generateFrameNumbers('sickHero', { start: 7, end: 10 }),
+    frameRate: 10,
     repeat: -1,
   });
 
@@ -75,13 +85,14 @@ function create() {
 
 function update() {
   if (cursors.right.isDown) {
-    player.setVelocityX(100);
-
+    player.setVelocityX(50);
     player.anims.play('right', true);
-  } else
-  {
+  } else {
     player.setVelocityX(0);
+    player.anims.play('turn');
+  }
 
-    player.anims.play('turn')
+  if (cursors.up.isDown && player.body.touching.down) {
+    player.setVelocityY(-120);
   }
 }
