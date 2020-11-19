@@ -17,10 +17,11 @@ const config = {
 };
 
 let player;
+let platforms;
 let hearts;
 let sneezeBar;
 let cursors;
-let platforms;
+
 let spike;
 
 const game = new Phaser.Game(config);
@@ -62,10 +63,17 @@ function create() {
   sneezeBar = this.physics.add.staticGroup();
   sneezeBar.create(250, 30, 'sneezeBar');
 
-  player = this.physics.add.sprite(400, 600, 'sickHero');
+  player = this.physics.add.sprite(400, 550, 'sickHero');
 
   player.setBounce(0.2);
   player.setCollideWorldBounds(true);
+
+  this.anims.create({
+    key: 'left',
+    frames: this.anims.generateFrameNumbers('sickHero', { start: 6, end: 8 }),
+    frameRate: 10,
+    repeat: -1,
+  });
 
   this.anims.create({
     key: 'turn',
@@ -75,24 +83,32 @@ function create() {
 
   this.anims.create({
     key: 'right',
-    frames: this.anims.generateFrameNumbers('sickHero', { start: 7, end: 10 }),
+    frames: this.anims.generateFrameNumbers('sickHero', { start: 9, end: 11 }),
     frameRate: 10,
     repeat: -1,
   });
 
   cursors = this.input.keyboard.createCursorKeys();
+
+  this.physics.add.collider(player, platforms);
 }
 
 function update() {
-  if (cursors.right.isDown) {
+  if (cursors.left.isDown) {
+    player.setVelocityX(-50);
+
+    player.anims.play('left', true);
+  } else if (cursors.right.isDown) {
     player.setVelocityX(50);
+
     player.anims.play('right', true);
   } else {
     player.setVelocityX(0);
+
     player.anims.play('turn');
   }
 
-  if (cursors.up.isDown && player.body.touching.down) {
+  if (cursors.up.isDown) {
     player.setVelocityY(-120);
   }
 }
