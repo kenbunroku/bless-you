@@ -28,7 +28,7 @@ const game = new Phaser.Game(config);
 
 function preload() {
   this.load.image('building', './assets/img/background.png');
-  this.load.image('ground', './assets/img/platform.png');
+  this.load.json('ground', './assets/img/platform.json');
   this.load.image('spike', './assets/img/spike.png');
   this.load.image('heart', './assets/img/heart.png');
   this.load.spritesheet('sneezeBar', './assets/img/sneeze-bar.png', {
@@ -88,9 +88,18 @@ function create() {
     repeat: -1,
   });
 
+  this.anims.create({
+    key: 'sneezeBar',
+    frames: this.anims.generateFrameNumbers('sneezeBar', { start: 0, end: 4 }),
+    frameRate: 10,
+    repeat: -1,
+  });
+
   cursors = this.input.keyboard.createCursorKeys();
 
   this.physics.add.collider(player, platforms);
+
+  this.anims.play('sneezeBar', true);
 }
 
 function update() {
