@@ -27,9 +27,8 @@ let spike;
 const game = new Phaser.Game(config);
 
 function preload() {
-  this.load.image('building', './assets/img/background.png');
-  this.load.json('ground', './assets/img/platform.json');
-  this.load.image('spike', './assets/img/spike.png');
+  this.load.image('tiles', './assets/tilesets/tileset.png');
+  this.load.tilemapTiledJSON('map', './assets/tilemaps/tilemap.json');
   this.load.image('heart', './assets/img/heart.png');
   this.load.spritesheet('sneezeBar', './assets/img/sneeze-bar.png', {
     frameWidth: 150,
@@ -46,13 +45,11 @@ function preload() {
 }
 
 function create() {
-  this.add.image(512, -168, 'building');
+  const map = this.make.tilemap({ key: 'map' });
+  const tileset = map.addTilesetImage('bless-you-tileset', 'tiles');
 
-  platforms = this.physics.add.staticGroup();
-  platforms.create(512, -168, 'ground');
-
-  spike = this.physics.add.staticGroup();
-  spike.create(512, -168, 'spike');
+  const background = map.createStaticLayer('background', tileset, 0, -924);
+  const ground = map.createStaticLayer('ground', tileset, 0, -924);
 
   hearts = this.physics.add.staticGroup({
     key: 'heart',
@@ -97,9 +94,7 @@ function create() {
 
   cursors = this.input.keyboard.createCursorKeys();
 
-  this.physics.add.collider(player, platforms);
-
-  this.anims.play('sneezeBar', true);
+  this.physics.add.collider(player, ground);
 }
 
 function update() {
