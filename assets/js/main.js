@@ -61,6 +61,7 @@ function create() {
   ground.setCollisionByProperty({ collides: true });
   background.setCollisionByProperty({ collides: true });
 
+  // Below code is to check collision setting
   // const debugGraphics = this.add.graphics().setAlpha(0.75);
   // background.renderDebug(debugGraphics, {
   //   tileColor: null, // Color of non-colliding tiles
@@ -68,19 +69,21 @@ function create() {
   //   faceColor: new Phaser.Display.Color(40, 39, 37, 255), // Color of colliding face edges
   // });
 
+  // Create status elements on left top
   hearts = this.physics.add.staticGroup({
     key: 'heart',
     repeat: 2,
     setXY: { x: 50, y: 30, stepX: 40 },
   });
-
   sneezeBar = this.add.sprite(250, 30, 'sneezeBar');
+  // TODO Change game element position according to the player position
 
   player = this.physics.add.sprite(400, 550, 'sickHero');
 
   this.cameras.main.startFollow(player, true, 0.09, 0.09);
   this.cameras.main.setZoom(1);
 
+  // Create player animations
   this.anims.create({
     key: 'left',
     frames: this.anims.generateFrameNumbers('sickHero', { start: 6, end: 8 }),
@@ -115,6 +118,7 @@ function create() {
     repeat: -1,
   });
 
+  // Create sneezeBar animation
   this.anims.create({
     key: 'sneezeBar',
     frames: this.anims.generateFrameNumbers('sneezeBar', { start: 0, end: 3 }),
@@ -122,12 +126,16 @@ function create() {
     repeat: -1,
   });
 
+  // Keyboard setting
   keyA = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
   keyD = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
   keyW = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
 
   this.physics.add.collider(player, ground);
   this.physics.add.collider(player, background);
+
+  // TODO Add physics to spike
+  // TODO Add damage function to spike
 
   sneezeBar.anims.play('sneezeBar', true);
 
