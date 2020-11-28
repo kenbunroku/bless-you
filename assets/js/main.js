@@ -154,14 +154,20 @@ function update() {
     player.anims.play('turn');
   }
 
-  if (keyW.isDown && player.body.onFloor()) {
+  if (keyW.isDown && player.body.blocked.down) {
     player.setVelocityY(-200);
+    // TODO Attach jump sound
+  }
 
-    player.anims.play('jump');
+  if (player.body.blocked.down) {
+  } else {
+    // TODO Change orientation based on velocityX
+    player.anims.play('jump', 10);
   }
 }
 
 function sneezeJump() {
   player.setVelocityY(-200);
-  player.anims.play('sneezeJump');
+  // TODO Attach jump sound
+  // TODO Add sneezeJump anims
 }
