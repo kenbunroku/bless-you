@@ -73,8 +73,7 @@ function create() {
     setXY: { x: 50, y: 30, stepX: 40 },
   });
 
-  sneezeBar = this.physics.add.staticGroup();
-  sneezeBar.create(250, 30, 'sneezeBar');
+  sneezeBar = this.add.sprite(250, 30, 'sneezeBar');
 
   player = this.physics.add.sprite(400, 550, 'sickHero');
 
@@ -105,9 +104,16 @@ function create() {
   });
 
   this.anims.create({
+    key: 'jump',
+    frames: [{ key: 'sickHero', frame: 13 }],
+    frameRate: 10,
+    repeat: 0,
+  });
+
+  this.anims.create({
     key: 'sneezeBar',
     frames: this.anims.generateFrameNumbers('sneezeBar', { start: 0, end: 4 }),
-    frameRate: 10,
+    frameRate: 3,
     repeat: -1,
   });
 
@@ -117,6 +123,8 @@ function create() {
 
   this.physics.add.collider(player, ground);
   this.physics.add.collider(player, background);
+
+  sneezeBar.anims.play('sneezeBar', true);
 }
 
 function update() {
@@ -136,5 +144,7 @@ function update() {
 
   if (keyW.isDown && player.body.onFloor()) {
     player.setVelocityY(-200);
+
+    player.anims.play('jump');
   }
 }
