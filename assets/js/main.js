@@ -21,8 +21,10 @@ let platforms;
 let hearts;
 let sneezeBar;
 let cursors;
-
 let spike;
+let keyA;
+let keyD;
+let keyW;
 
 const game = new Phaser.Game(config);
 
@@ -52,14 +54,10 @@ function create() {
   const ground = map.createStaticLayer('ground', tileset, 0, -932);
   const spike = map.createStaticLayer('spike', tileset, 0, -932);
 
-  ground.setCollisionByProperty({ collides: true });
+  this.cameras.main.setBounds(0, -932, 1024, 1532);
 
-  // const debugGraphics = this.add.graphics().setAlpha(0.75);
-  // ground.renderDebug(debugGraphics, {
-  //   tileColor: null, // Color of non-colliding tiles
-  //   collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
-  //   faceColor: new Phaser.Display.Color(40, 39, 37, 255), // Color of colliding face edges
-  // });
+  ground.setCollisionByProperty({ collides: true });
+  background.setCollisionByProperty({ collides: true });
 
   hearts = this.physics.add.staticGroup({
     key: 'heart',
@@ -74,6 +72,9 @@ function create() {
 
   player.setBounce(0.2);
   player.setCollideWorldBounds(true);
+
+  this.cameras.main.startFollow(player, true, 0.09, 0.09);
+  this.cameras.main.setZoom(1);
 
   this.anims.create({
     key: 'left',
@@ -102,17 +103,20 @@ function create() {
     repeat: -1,
   });
 
-  cursors = this.input.keyboard.createCursorKeys();
+  keyA = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
+  keyD = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
+  keyW = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
 
   this.physics.add.collider(player, ground);
+  this.physics.add.collider(player, background);
 }
 
 function update() {
-  if (cursors.left.isDown) {
+  if (keyA.isDown) {
     player.setVelocityX(-100);
 
     player.anims.play('left', true);
-  } else if (cursors.right.isDown) {
+  } else if (keyD.isDown) {
     player.setVelocityX(100);
 
     player.anims.play('right', true);
@@ -122,7 +126,7 @@ function update() {
     player.anims.play('turn');
   }
 
-  if (cursors.up.isDown && player.body.onFloor()) {
+  if (keyW.isDown && player.body.onFloor()) {
     player.setVelocityY(-200);
   }
 }
