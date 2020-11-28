@@ -25,6 +25,7 @@ let spike;
 let keyA;
 let keyD;
 let keyW;
+let timedJump;
 
 const game = new Phaser.Game(config);
 
@@ -33,8 +34,8 @@ function preload() {
   this.load.tilemapTiledJSON('map', './assets/tilemaps/bless-you.json');
   this.load.image('heart', './assets/img/heart.png');
   this.load.spritesheet('sneezeBar', './assets/img/sneeze-bar.png', {
-    frameWidth: 150,
-    frameHeight: 50,
+    frameWidth: 128,
+    frameHeight: 32,
   });
   this.load.spritesheet('sickHero', './assets/img/sick-hero.png', {
     frameWidth: 32,
@@ -77,9 +78,6 @@ function create() {
 
   player = this.physics.add.sprite(400, 550, 'sickHero');
 
-  player.setBounce(0.2);
-  player.setCollideWorldBounds(true);
-
   this.cameras.main.startFollow(player, true, 0.09, 0.09);
   this.cameras.main.setZoom(1);
 
@@ -111,9 +109,16 @@ function create() {
   });
 
   this.anims.create({
+    key: 'sneezeJump',
+    frames: [{ key: 'sickHero', frame: 23 }],
+    frameRate: 10,
+    repeat: -1,
+  });
+
+  this.anims.create({
     key: 'sneezeBar',
-    frames: this.anims.generateFrameNumbers('sneezeBar', { start: 0, end: 4 }),
-    frameRate: 3,
+    frames: this.anims.generateFrameNumbers('sneezeBar', { start: 0, end: 3 }),
+    frameRate: 2,
     repeat: -1,
   });
 
@@ -125,6 +130,13 @@ function create() {
   this.physics.add.collider(player, background);
 
   sneezeBar.anims.play('sneezeBar', true);
+
+  timedJump = this.time.addEvent({
+    delay: 2000,
+    callback: sneezeJump,
+    callbackScope: this,
+    loop: true,
+  });
 }
 
 function update() {
@@ -147,4 +159,9 @@ function update() {
 
     player.anims.play('jump');
   }
+}
+
+function sneezeJump() {
+  player.setVelocityY(-200);
+  player.anims.play('sneezeJump');
 }
