@@ -47,6 +47,9 @@ function preload() {
 }
 
 function create() {
+  this.cameras.main.setBounds(0, -932, 1024, 1532);
+  this.physics.world.setBounds(0, -932, 1024, 1532);
+
   const map = this.make.tilemap({ key: 'map' });
   const tileset = map.addTilesetImage('bless-you-tileset', 'tiles');
 
@@ -54,10 +57,15 @@ function create() {
   const ground = map.createStaticLayer('ground', tileset, 0, -932);
   const spike = map.createStaticLayer('spike', tileset, 0, -932);
 
-  this.cameras.main.setBounds(0, -932, 1024, 1532);
-
   ground.setCollisionByProperty({ collides: true });
   background.setCollisionByProperty({ collides: true });
+
+  // const debugGraphics = this.add.graphics().setAlpha(0.75);
+  // background.renderDebug(debugGraphics, {
+  //   tileColor: null, // Color of non-colliding tiles
+  //   collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
+  //   faceColor: new Phaser.Display.Color(40, 39, 37, 255), // Color of colliding face edges
+  // });
 
   hearts = this.physics.add.staticGroup({
     key: 'heart',
