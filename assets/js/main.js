@@ -28,7 +28,7 @@ const game = new Phaser.Game(config);
 
 function preload() {
   this.load.image('tiles', './assets/tilesets/tileset.png');
-  this.load.tilemapTiledJSON('map', './assets/tilemaps/tilemap.json');
+  this.load.tilemapTiledJSON('map', './assets/tilemaps/bless-you.json');
   this.load.image('heart', './assets/img/heart.png');
   this.load.spritesheet('sneezeBar', './assets/img/sneeze-bar.png', {
     frameWidth: 150,
@@ -48,8 +48,18 @@ function create() {
   const map = this.make.tilemap({ key: 'map' });
   const tileset = map.addTilesetImage('bless-you-tileset', 'tiles');
 
-  const background = map.createStaticLayer('background', tileset, 0, -924);
-  const ground = map.createStaticLayer('ground', tileset, 0, -924);
+  const background = map.createStaticLayer('background', tileset, 0, -932);
+  const ground = map.createStaticLayer('ground', tileset, 0, -932);
+  const spike = map.createStaticLayer('spike', tileset, 0, -932);
+
+  ground.setCollisionByProperty({ collides: true });
+
+  // const debugGraphics = this.add.graphics().setAlpha(0.75);
+  // ground.renderDebug(debugGraphics, {
+  //   tileColor: null, // Color of non-colliding tiles
+  //   collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
+  //   faceColor: new Phaser.Display.Color(40, 39, 37, 255), // Color of colliding face edges
+  // });
 
   hearts = this.physics.add.staticGroup({
     key: 'heart',
@@ -99,11 +109,11 @@ function create() {
 
 function update() {
   if (cursors.left.isDown) {
-    player.setVelocityX(-50);
+    player.setVelocityX(-100);
 
     player.anims.play('left', true);
   } else if (cursors.right.isDown) {
-    player.setVelocityX(50);
+    player.setVelocityX(100);
 
     player.anims.play('right', true);
   } else {
@@ -112,7 +122,7 @@ function update() {
     player.anims.play('turn');
   }
 
-  if (cursors.up.isDown) {
-    player.setVelocityY(-120);
+  if (cursors.up.isDown && player.body.onFloor()) {
+    player.setVelocityY(-200);
   }
 }
