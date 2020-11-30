@@ -45,11 +45,24 @@ function preload() {
     frameWidth: 32,
     frameHeight: 32,
   });
+  this.load.audio('bgm', ['./assets/audio/bgm.ogg', './assets/audio/bgm.mp3']);
 }
 
 function create() {
   this.cameras.main.setBounds(0, -932, 1024, 1532);
   this.physics.world.setBounds(0, -932, 1024, 1532);
+  this.music = this.sound.add('bgm');
+
+  const musicConfig = {
+    mute: false,
+    volume: 0.1,
+    rate: 1,
+    detune: 0,
+    seek: 0,
+    loop: true,
+    delay: 0,
+  };
+  this.music.play(musicConfig);
 
   const map = this.make.tilemap({ key: 'map' });
   const tileset = map.addTilesetImage('bless-you-tileset', 'tiles');
@@ -120,7 +133,7 @@ function create() {
 
   this.anims.create({
     key: 'sneezeJump',
-    frames: [{ key: 'sickHero', frame: 23 }],
+    frames: [{ key: 'sickHero', frame: 26 }],
     frameRate: 10,
     repeat: -1,
   });
@@ -184,7 +197,11 @@ function update() {
 }
 
 function sneezeJump() {
+  let onGround = player.body.blocked.down;
+
   player.setVelocityY(-200);
-  // TODO Attach jump sound
   // TODO Add sneezeJump anims
+  if (onGround == false) {
+    player.anims.play('sneezeJump', 10);
+  }
 }
