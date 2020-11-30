@@ -46,23 +46,19 @@ function preload() {
     frameHeight: 32,
   });
   this.load.audio('bgm', ['./assets/audio/bgm.ogg', './assets/audio/bgm.mp3']);
+  this.load.audio('jump', [
+    './assets/audio/jump.ogg',
+    './assets/audio/jump.mp3',
+  ]);
+  this.load.audio('sneeze', [
+    './assets/audio/sneeze.ogg',
+    './assets/audio/sneeze.mp3',
+  ]);
 }
 
 function create() {
   this.cameras.main.setBounds(0, -932, 1024, 1532);
   this.physics.world.setBounds(0, -932, 1024, 1532);
-  this.music = this.sound.add('bgm');
-
-  const musicConfig = {
-    mute: false,
-    volume: 0.1,
-    rate: 1,
-    detune: 0,
-    seek: 0,
-    loop: true,
-    delay: 0,
-  };
-  this.music.play(musicConfig);
 
   const map = this.make.tilemap({ key: 'map' });
   const tileset = map.addTilesetImage('bless-you-tileset', 'tiles');
@@ -74,6 +70,20 @@ function create() {
   ground.setCollisionByProperty({ collides: true });
   background.setCollisionByProperty({ collides: true });
 
+  this.music = this.sound.add('bgm');
+  this.jump = this.sound.add('jump');
+  this.sneeze = this.sound.add('sneeze');
+
+  const musicConfig = {
+    mute: false,
+    volume: 0.1,
+    rate: 1,
+    detune: 0,
+    seek: 0,
+    loop: true,
+    delay: 0,
+  };
+  this.music.play(musicConfig);
   // Below code is to check collision setting
   // const debugGraphics = this.add.graphics().setAlpha(0.75);
   // background.renderDebug(debugGraphics, {
@@ -186,7 +196,7 @@ function update() {
 
   if (keyW.isDown && player.body.blocked.down) {
     player.setVelocityY(-200);
-    // TODO Attach jump sound
+    this.jump.play();
   }
 
   if (onGround == false && player.body.velocity.x >= 0) {
@@ -200,6 +210,7 @@ function sneezeJump() {
   let onGround = player.body.blocked.down;
 
   player.setVelocityY(-200);
+  this.sneeze.play();
   // TODO Add sneezeJump anims
   if (onGround == false) {
     player.anims.play('sneezeJump', 10);
