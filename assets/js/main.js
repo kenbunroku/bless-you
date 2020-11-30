@@ -58,18 +58,20 @@ function preload() {
 
 function create() {
   this.cameras.main.setBounds(0, -932, 1024, 1532);
-  this.physics.world.setBounds(0, -932, 1024, 1532);
+  // this.physics.world.setBounds(0, -932, 1024, 1532);
 
   const map = this.make.tilemap({ key: 'map' });
   const tileset = map.addTilesetImage('bless-you-tileset', 'tiles');
 
   const background = map.createStaticLayer('background', tileset, 0, -932);
   const ground = map.createStaticLayer('ground', tileset, 0, -932);
-  const spike = map.createStaticLayer('spike', tileset, 0, -932);
+  let spike = map.createStaticLayer('spike', tileset, 0, -932);
 
   ground.setCollisionByProperty({ collides: true });
   background.setCollisionByProperty({ collides: true });
+  spike.setCollisionByProperty({ collides: true });
 
+  // Add sound effects
   this.music = this.sound.add('bgm');
   this.jump = this.sound.add('jump');
   this.sneeze = this.sound.add('sneeze');
@@ -93,15 +95,22 @@ function create() {
   // });
 
   // Create status elements on left top
-  hearts = this.physics.add.staticGroup({
+  let heartCount = 2;
+
+  hearts = this.add.group({
     key: 'heart',
-    repeat: 2,
+    repeat: heartCount,
     setXY: { x: 50, y: 30, stepX: 40 },
   });
-  sneezeBar = this.add.sprite(250, 30, 'sneezeBar');
-  // TODO Change game element position according to the player position
 
-  player = this.physics.add.sprite(400, 550, 'sickHero');
+  hearts.children.entries.forEach((heart) => {
+    heart.setScrollFactor(0);
+  });
+
+  sneezeBar = this.add.sprite(250, 30, 'sneezeBar');
+  sneezeBar.setScrollFactor(0);
+
+  player = this.physics.add.sprite(200, 0, 'sickHero');
 
   this.cameras.main.startFollow(player, true, 0.09, 0.09);
   this.cameras.main.setZoom(1);
@@ -128,7 +137,7 @@ function create() {
   });
 
   this.anims.create({
-    key: 'jump',
+    key: 'jumpRight',
     frames: [{ key: 'sickHero', frame: 16 }],
     frameRate: 10,
     repeat: 0,
@@ -156,18 +165,20 @@ function create() {
     repeat: -1,
   });
 
+  sneezeBar.anims.play('sneezeBar', true);
   // Keyboard setting
   keyA = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
   keyD = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
   keyW = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
 
+  spike = this.physics.add.group();
+
   this.physics.add.collider(player, ground);
   this.physics.add.collider(player, background);
+  this.physics.add.collider(player, spike);
 
-  // TODO Add physics to spike
   // TODO Add damage function to spike
-
-  sneezeBar.anims.play('sneezeBar', true);
+  this.physics.add.overlap(player, spike, hitSpike, null, this);
 
   timedJump = this.time.addEvent({
     delay: 2000,
@@ -196,11 +207,20 @@ function update() {
 
   if (keyW.isDown && player.body.blocked.down) {
     player.setVelocityY(-200);
-    this.jump.play();
+    const musicConfig = {
+      mute: false,
+      volume: 0.1,
+      rate: 1,
+      detune: 0,
+      seek: 0,
+      loop: false,
+      delay: 0,
+    };
+    this.jump.play(musicConfig);
   }
 
   if (onGround == false && player.body.velocity.x >= 0) {
-    player.anims.play('jump', 10);
+    player.anims.play('jumpRight', 10);
   } else if (onGround == false && player.body.velocity.x < 0) {
     player.anims.play('jumpLeft', 10);
   }
@@ -209,10 +229,14 @@ function update() {
 function sneezeJump() {
   let onGround = player.body.blocked.down;
 
-  player.setVelocityY(-200);
+  player.setVelocityY(-225);
   this.sneeze.play();
   // TODO Add sneezeJump anims
   if (onGround == false) {
     player.anims.play('sneezeJump', 10);
   }
+}
+
+function hitSpike(player, spike) {
+  player.setTint(0xff0000);
 }
