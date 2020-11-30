@@ -106,7 +106,14 @@ function create() {
 
   this.anims.create({
     key: 'jump',
-    frames: [{ key: 'sickHero', frame: 13 }],
+    frames: [{ key: 'sickHero', frame: 16 }],
+    frameRate: 10,
+    repeat: 0,
+  });
+
+  this.anims.create({
+    key: 'jumpLeft',
+    frames: [{ key: 'sickHero', frame: 20 }],
     frameRate: 10,
     repeat: 0,
   });
@@ -148,6 +155,8 @@ function create() {
 }
 
 function update() {
+  let onGround = player.body.blocked.down;
+
   if (keyA.isDown) {
     player.setVelocityX(-100);
 
@@ -167,10 +176,10 @@ function update() {
     // TODO Attach jump sound
   }
 
-  if (player.body.blocked.down) {
-  } else {
-    // TODO Change orientation based on velocityX
+  if (onGround == false && player.body.velocity.x >= 0) {
     player.anims.play('jump', 10);
+  } else if (onGround == false && player.body.velocity.x < 0) {
+    player.anims.play('jumpLeft', 10);
   }
 }
 
