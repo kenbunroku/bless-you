@@ -1,3 +1,5 @@
+// import Preloader from './scenes/preloader.js';
+
 const config = {
   type: Phaser.AUTO,
   width: 800,
@@ -65,7 +67,7 @@ function create() {
 
   const background = map.createStaticLayer('background', tileset, 0, -932);
   const ground = map.createStaticLayer('ground', tileset, 0, -932);
-  let spike = map.createStaticLayer('spike', tileset, 0, -932);
+  spike = map.createStaticLayer('spike', tileset, 0, -932);
 
   ground.setCollisionByProperty({ collides: true });
   background.setCollisionByProperty({ collides: true });
@@ -86,6 +88,7 @@ function create() {
     delay: 0,
   };
   this.music.play(musicConfig);
+
   // Below code is to check collision setting
   // const debugGraphics = this.add.graphics().setAlpha(0.75);
   // background.renderDebug(debugGraphics, {
@@ -110,7 +113,7 @@ function create() {
   sneezeBar = this.add.sprite(250, 30, 'sneezeBar');
   sneezeBar.setScrollFactor(0);
 
-  player = this.physics.add.sprite(200, 0, 'sickHero');
+  player = this.physics.add.sprite(150, 100, 'sickHero');
 
   this.cameras.main.startFollow(player, true, 0.09, 0.09);
   this.cameras.main.setZoom(1);
@@ -171,7 +174,7 @@ function create() {
   keyD = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
   keyW = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
 
-  spike = this.physics.add.group();
+  spike = this.physics.add.image();
 
   this.physics.add.collider(player, ground);
   this.physics.add.collider(player, background);
@@ -232,11 +235,13 @@ function sneezeJump() {
   player.setVelocityY(-225);
   this.sneeze.play();
   // TODO Add sneezeJump anims
-  if (onGround == false) {
-    player.anims.play('sneezeJump', 10);
-  }
+  // if (onGround == false) {
+  //   player.anims.stop();
+  //   player.anims.play('sneezeJump', 10);
+  // }
 }
 
 function hitSpike(player, spike) {
   player.setTint(0xff0000);
+  player.anims.play('turn');
 }
