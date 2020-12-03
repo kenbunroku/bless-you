@@ -1,5 +1,7 @@
 // import Preloader from './scenes/preloader.js';
 
+import { debugDraw } from './utils/debug.js';
+
 const config = {
   type: Phaser.AUTO,
   width: 800,
@@ -16,6 +18,9 @@ const config = {
     create: create,
     update: update,
   },
+  // scale: {
+  //   zoom: 0.8,
+  // },
 };
 
 let player;
@@ -32,7 +37,7 @@ let timedJump;
 const game = new Phaser.Game(config);
 
 function preload() {
-  this.load.image('tiles', './assets/tilesets/tileset.png');
+  this.load.image('tiles', './assets/tilesets/tileset_extruded.png');
   this.load.tilemapTiledJSON('map', './assets/tilemaps/bless-you.json');
   this.load.image('heart', './assets/img/heart.png');
   this.load.spritesheet('sneezeBar', './assets/img/sneeze-bar.png', {
@@ -63,7 +68,14 @@ function create() {
   // this.physics.world.setBounds(0, -932, 1024, 1532);
 
   const map = this.make.tilemap({ key: 'map' });
-  const tileset = map.addTilesetImage('bless-you-tileset', 'tiles');
+  const tileset = map.addTilesetImage(
+    'bless-you-tileset',
+    'tiles',
+    32,
+    32,
+    1,
+    2
+  );
 
   const background = map.createStaticLayer('background', tileset, 0, -932);
   const ground = map.createStaticLayer('ground', tileset, 0, -932);
@@ -72,6 +84,10 @@ function create() {
   ground.setCollisionByProperty({ collides: true });
   background.setCollisionByProperty({ collides: true });
   spike.setCollisionByProperty({ collides: true });
+
+  // spike.setSize(spike.width, spike.height *  0.8);
+
+  console.log(spike);
 
   // Add sound effects
   this.music = this.sound.add('bgm');
@@ -90,12 +106,7 @@ function create() {
   this.music.play(musicConfig);
 
   // Below code is to check collision setting
-  // const debugGraphics = this.add.graphics().setAlpha(0.75);
-  // background.renderDebug(debugGraphics, {
-  //   tileColor: null, // Color of non-colliding tiles
-  //   collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
-  //   faceColor: new Phaser.Display.Color(40, 39, 37, 255), // Color of colliding face edges
-  // });
+  debugDraw(spike, this);
 
   // Create status elements on left top
   let heartCount = 2;
@@ -174,7 +185,7 @@ function create() {
   keyD = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
   keyW = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
 
-  spike = this.physics.add.image();
+  // spike = this.physics.add.image();
 
   this.physics.add.collider(player, ground);
   this.physics.add.collider(player, background);
