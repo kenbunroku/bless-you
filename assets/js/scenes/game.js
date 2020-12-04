@@ -15,8 +15,6 @@ export default class Game extends Phaser.Scene {
       left: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A),
       right: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D),
     };
-
-    // const keyW = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
   }
 
   create() {
@@ -43,9 +41,34 @@ export default class Game extends Phaser.Scene {
       .createStaticLayer('ground', tileset, 0, -932)
       .setCollisionByProperty({ collides: true });
 
-    const spike = map
-      .createStaticLayer('spike', tileset, 0, -932)
+    this.spike = map
+      .createDynamicLayer('spike', tileset, 0, -932)
       .setCollisionByProperty({ collides: true });
+
+    this.player = this.physics.add.sprite(150, 100, 'sickHero');
+
+    // Create a physics group - useful for colliding the player against all the spikes
+    this.spikeGroup = this.physics.add.staticGroup();
+    this.physics.add.collider(this.player, this.spike);
+
+    // Loop over each Tile and replace spikes (tile index 77) with custom sprites
+    this.spike.forEachTile((tile) => {
+      // A sprite has its origin at the center, so place the sprite at the center of the tile
+      if (tile.index === 11) {
+        const x = tile.getCenterX();
+        const y = tile.getCenterY();
+        const spikeTile = this.spikeGroup.create(x, y, 'spikeTile');
+
+        // The map has spike tiles that have been rotated in Tiled ("z" key), so parse out that angle
+        // to the correct body placement
+        spikeTile.rotation = tile.rotation;
+        if (spikeTile.angle === 0)
+          spikeTile.body.setSize(32, 6).setOffset(10, 20);
+
+        // And lastly, remove the spike tile from the layer
+        this.spike.removeTileAt(tile.x, tile.y);
+      }
+    });
 
     // Add sound effects
     this.music = this.sound.add('bgm');
@@ -80,14 +103,19 @@ export default class Game extends Phaser.Scene {
     this.sneezeBar.setScrollFactor(0);
     this.sneezeBar.anims.play('sneezeBar', true);
 
-    this.player = this.physics.add.sprite(150, 100, 'sickHero');
-
     this.cameras.main.startFollow(this.player, true, 0.09, 0.09);
     this.cameras.main.setZoom(1);
 
     this.physics.add.collider(this.player, ground);
     this.physics.add.collider(this.player, background);
-    this.physics.add.collider(this.player, spike);
+
+    this.physics.add.overlap(
+      this.player,
+      this.spikeGroup,
+      this.hitSpike,
+      null,
+      this
+    );
 
     this.time.addEvent({
       delay: 2000,
@@ -147,5 +175,11 @@ export default class Game extends Phaser.Scene {
     //   this.player.anims.stop();
     //   this.player.anims.play('sneezeJump', 10);
     // }
+  }
+
+  hitSpike() {
+    console.log('Damage');
+    this.player.setTint(0xff0000);
+    this.player.anims.play('turn');
   }
 }
