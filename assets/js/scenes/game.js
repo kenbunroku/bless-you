@@ -110,7 +110,7 @@ export default class Game extends Phaser.Scene {
       },
     });
 
-    this.hearts.children.entries.forEach((heart) => {
+    this.hearts.getChildren().forEach((heart) => {
       heart.setScrollFactor(0);
     });
 
