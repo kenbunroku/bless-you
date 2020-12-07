@@ -4,6 +4,20 @@ import { createCharacterAnims } from '../anims/player.js';
 export default class Game extends Phaser.Scene {
   constructor() {
     super('game');
+
+    this.LIVES = 3;
+    this.COOL_DOWN_TIMER = 2000; // in milliseconds
+    this.isHurt = false;
+
+    this.PLAYER_STARTING_LOCATION = {
+      x: 150,
+      y: 0,
+    };
+
+    // this.PLAYER_STARTING_LOCATION = {
+    //   x: 350,
+    //   y: -100,
+    // };
   }
 
   preload() {
@@ -44,7 +58,11 @@ export default class Game extends Phaser.Scene {
       .createDynamicLayer('spike', tileset, 0, -932)
       .setCollisionByProperty({ collides: true });
 
-    this.player = this.physics.add.sprite(150, 100, 'sickHero');
+    this.player = this.physics.add.sprite(
+      this.PLAYER_STARTING_LOCATION.x,
+      this.PLAYER_STARTING_LOCATION.y,
+      'sickHero'
+    );
 
     // Create a physics group - useful for colliding the player against all the spikes
     this.spikeGroup = this.physics.add.staticGroup();
@@ -84,7 +102,7 @@ export default class Game extends Phaser.Scene {
 
     this.hearts = this.add.group({
       key: 'heart',
-      repeat: 2,
+      repeat: this.LIVES - 1,
       setXY: {
         x: 50,
         y: 30,
@@ -92,7 +110,7 @@ export default class Game extends Phaser.Scene {
       },
     });
 
-    this.hearts.children.entries.forEach((heart) => {
+    this.hearts.getChildren().forEach((heart) => {
       heart.setScrollFactor(0);
     });
 
@@ -124,19 +142,20 @@ export default class Game extends Phaser.Scene {
 
   update() {
     const onGround = this.player.body.blocked.down;
+    const currentPlayerAnim = this.player.anims.getCurrentKey();
 
     if (this.wasd.left.isDown || this.cursors.left.isDown) {
       this.player.setVelocityX(-100);
 
-      this.player.anims.play('left', true);
+      // this.player.anims.play('left', true);
     } else if (this.wasd.right.isDown || this.cursors.right.isDown) {
       this.player.setVelocityX(100);
 
-      this.player.anims.play('right', true);
+      // this.player.anims.play('right', true);
     } else {
       this.player.setVelocityX(0);
 
-      this.player.anims.play('turn');
+      // this.player.anims.play('turn');
     }
 
     if ((this.wasd.up.isDown || this.cursors.up.isDown) && onGround) {
@@ -152,28 +171,46 @@ export default class Game extends Phaser.Scene {
       });
     }
 
-    if (onGround == false && this.player.body.velocity.x >= 0) {
-      this.player.anims.play('jumpRight', 10);
-    } else if (onGround == false && this.player.body.velocity.x < 0) {
-      this.player.anims.play('jumpLeft', 10);
+    if (onGround) {
+      this.player.anims.play('turn');
+    } else if (currentPlayerAnim !== 'sneezeJump') {
+      if (this.player.body.velocity.x > 0) {
+        this.player.anims.play('jumpRight');
+      } else if (this.player.body.velocity.x < 0) {
+        this.player.anims.play('jumpLeft');
+      }
     }
   }
 
   sneezeJump() {
-    const onGround = this.player.body.blocked.down;
-
     this.player.setVelocityY(-225);
     this.sneeze.play();
-    // TODO Add sneezeJump anims
-    this.player.anims.play('sneezeJump', 10);
+    // TODO(shin): Figure out how to flip animation based on velocity
+    this.player.anims.stop();
+    this.player.anims.play('sneezeJump');
   }
 
   hitSpike() {
-    this.player.setBounce(0.7);
+    if (this.isHurt) {
+      return;
+    }
+
+    this.isHurt = true;
+
+    // TODO(shin): Check to see if zero hearts, end game/restart/etc.
+
+    this.time.addEvent({
+      delay: this.COOL_DOWN_TIMER,
+      callback: () => {
+        this.isHurt = false;
+        this.player.clearTint();
+      },
+    });
+
+    // this.player.setBounce(0.7);
     this.player.setTint(0xff0000);
 
-    this.hearts.destroy();
-
-    // this.hearts.diableBody(true, true);
+    const first = this.hearts.getChildren().pop();
+    first.destroy();
   }
 }
