@@ -8,6 +8,16 @@ export default class Game extends Phaser.Scene {
     this.LIVES = 3;
     this.COOL_DOWN_TIMER = 2000; // in milliseconds
     this.isHurt = false;
+
+    this.PLAYER_STARTING_LOCATION = {
+      x: 150,
+      y: 0,
+    };
+
+    // this.PLAYER_STARTING_LOCATION = {
+    //   x: 350,
+    //   y: -100,
+    // };
   }
 
   preload() {
@@ -48,7 +58,11 @@ export default class Game extends Phaser.Scene {
       .createDynamicLayer('spike', tileset, 0, -932)
       .setCollisionByProperty({ collides: true });
 
-    this.player = this.physics.add.sprite(350, -100, 'sickHero');
+    this.player = this.physics.add.sprite(
+      this.PLAYER_STARTING_LOCATION.x,
+      this.PLAYER_STARTING_LOCATION.y,
+      'sickHero'
+    );
 
     // Create a physics group - useful for colliding the player against all the spikes
     this.spikeGroup = this.physics.add.staticGroup();
@@ -128,19 +142,20 @@ export default class Game extends Phaser.Scene {
 
   update() {
     const onGround = this.player.body.blocked.down;
+    const currentPlayerAnim = this.player.anims.getCurrentKey();
 
     if (this.wasd.left.isDown || this.cursors.left.isDown) {
       this.player.setVelocityX(-100);
 
-      this.player.anims.play('left', true);
+      // this.player.anims.play('left', true);
     } else if (this.wasd.right.isDown || this.cursors.right.isDown) {
       this.player.setVelocityX(100);
 
-      this.player.anims.play('right', true);
+      // this.player.anims.play('right', true);
     } else {
       this.player.setVelocityX(0);
 
-      this.player.anims.play('turn');
+      // this.player.anims.play('turn');
     }
 
     if ((this.wasd.up.isDown || this.cursors.up.isDown) && onGround) {
@@ -156,20 +171,23 @@ export default class Game extends Phaser.Scene {
       });
     }
 
-    if (onGround == false && this.player.body.velocity.x >= 0) {
-      this.player.anims.play('jumpRight', 10);
-    } else if (onGround == false && this.player.body.velocity.x < 0) {
-      this.player.anims.play('jumpLeft', 10);
+    if (onGround) {
+      this.player.anims.play('turn');
+    } else if (currentPlayerAnim !== 'sneezeJump') {
+      if (this.player.body.velocity.x > 0) {
+        this.player.anims.play('jumpRight');
+      } else if (this.player.body.velocity.x < 0) {
+        this.player.anims.play('jumpLeft');
+      }
     }
   }
 
   sneezeJump() {
-    const onGround = this.player.body.blocked.down;
-
     this.player.setVelocityY(-225);
     this.sneeze.play();
-    // TODO Add sneezeJump anims
-    this.player.anims.play('sneezeJump', 10);
+    // TODO(shin): Figure out how to flip animation based on velocity
+    this.player.anims.stop();
+    this.player.anims.play('sneezeJump');
   }
 
   hitSpike() {
