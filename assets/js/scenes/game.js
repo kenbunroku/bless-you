@@ -4,7 +4,6 @@ import { createCharacterAnims } from '../anims/player.js';
 export default class Game extends Phaser.Scene {
   constructor() {
     super('game');
-    this.hearts = 2;
   }
 
   preload() {
@@ -49,7 +48,6 @@ export default class Game extends Phaser.Scene {
 
     // Create a physics group - useful for colliding the player against all the spikes
     this.spikeGroup = this.physics.add.staticGroup();
-    this.physics.add.collider(this.player, this.spike);
 
     // Loop over each Tile and replace spikes (tile index 77) with custom sprites
     this.spike.forEachTile((tile) => {
@@ -62,8 +60,7 @@ export default class Game extends Phaser.Scene {
         // The map has spike tiles that have been rotated in Tiled ("z" key), so parse out that angle
         // to the correct body placement
         spikeTile.rotation = tile.rotation;
-        if (spikeTile.angle === 0)
-          spikeTile.body.setSize(32, 6).setOffset(10, 20);
+        if (spikeTile.angle === 0) spikeTile.body.setSize(32, 10);
 
         // And lastly, remove the spike tile from the layer
         this.spike.removeTileAt(tile.x, tile.y);
@@ -87,7 +84,7 @@ export default class Game extends Phaser.Scene {
 
     this.hearts = this.add.group({
       key: 'heart',
-      repeat: this.hearts,
+      repeat: 2,
       setXY: {
         x: 50,
         y: 30,
@@ -109,20 +106,20 @@ export default class Game extends Phaser.Scene {
     this.physics.add.collider(this.player, ground);
     this.physics.add.collider(this.player, background);
 
-    this.physics.add.overlap(
-      this.player,
-      this.spikeGroup,
-      this.hitSpike,
-      null,
-      this
-    );
-
     this.time.addEvent({
       delay: 2000,
       callback: this.sneezeJump,
       callbackScope: this,
       loop: true,
     });
+
+    this.physics.add.collider(
+      this.player,
+      this.spikeGroup,
+      this.hitSpike,
+      null,
+      this
+    );
   }
 
   update() {
@@ -142,10 +139,7 @@ export default class Game extends Phaser.Scene {
       this.player.anims.play('turn');
     }
 
-    if (
-      (this.wasd.up.isDown || this.cursors.up.isDown) &&
-      this.player.body.blocked.down
-    ) {
+    if ((this.wasd.up.isDown || this.cursors.up.isDown) && onGround) {
       this.player.setVelocityY(-200);
       this.jump.play({
         mute: false,
@@ -171,15 +165,15 @@ export default class Game extends Phaser.Scene {
     this.player.setVelocityY(-225);
     this.sneeze.play();
     // TODO Add sneezeJump anims
-    // if (onGround == false) {
-    //   this.player.anims.stop();
-    //   this.player.anims.play('sneezeJump', 10);
-    // }
+    this.player.anims.play('sneezeJump', 10);
   }
 
   hitSpike() {
-    console.log('Damage');
+    this.player.setBounce(0.7);
     this.player.setTint(0xff0000);
-    this.player.anims.play('turn');
+
+    this.hearts.destroy();
+
+    // this.hearts.diableBody(true, true);
   }
 }
