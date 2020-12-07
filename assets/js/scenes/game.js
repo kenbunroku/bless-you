@@ -4,6 +4,10 @@ import { createCharacterAnims } from '../anims/player.js';
 export default class Game extends Phaser.Scene {
   constructor() {
     super('game');
+
+    this.LIVES = 3;
+    this.COOL_DOWN_TIMER = 2000; // in milliseconds
+    this.isHurt = false;
   }
 
   preload() {
@@ -44,7 +48,7 @@ export default class Game extends Phaser.Scene {
       .createDynamicLayer('spike', tileset, 0, -932)
       .setCollisionByProperty({ collides: true });
 
-    this.player = this.physics.add.sprite(150, 100, 'sickHero');
+    this.player = this.physics.add.sprite(350, -100, 'sickHero');
 
     // Create a physics group - useful for colliding the player against all the spikes
     this.spikeGroup = this.physics.add.staticGroup();
@@ -84,7 +88,7 @@ export default class Game extends Phaser.Scene {
 
     this.hearts = this.add.group({
       key: 'heart',
-      repeat: 2,
+      repeat: this.LIVES - 1,
       setXY: {
         x: 50,
         y: 30,
@@ -169,11 +173,26 @@ export default class Game extends Phaser.Scene {
   }
 
   hitSpike() {
-    this.player.setBounce(0.7);
+    if (this.isHurt) {
+      return;
+    }
+
+    this.isHurt = true;
+
+    // TODO(shin): Check to see if zero hearts, end game/restart/etc.
+
+    this.time.addEvent({
+      delay: this.COOL_DOWN_TIMER,
+      callback: () => {
+        this.isHurt = false;
+        this.player.clearTint();
+      },
+    });
+
+    // this.player.setBounce(0.7);
     this.player.setTint(0xff0000);
 
-    this.hearts.destroy();
-
-    // this.hearts.diableBody(true, true);
+    const first = this.hearts.getChildren().pop();
+    first.destroy();
   }
 }
