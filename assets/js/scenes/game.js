@@ -10,8 +10,8 @@ export default class Game extends Phaser.Scene {
     this.isHurt = false;
 
     this.PLAYER_STARTING_LOCATION = {
-      x: 150,
-      y: 0,
+      x: 520,
+      y: 560,
     };
 
     // this.PLAYER_STARTING_LOCATION = {
