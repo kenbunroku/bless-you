@@ -146,10 +146,12 @@ export default class Game extends Phaser.Scene {
 
     if (this.wasd.left.isDown || this.cursors.left.isDown) {
       this.player.setVelocityX(-100);
+      this.player.setFlipX(true);
 
       // this.player.anims.play('left', true);
     } else if (this.wasd.right.isDown || this.cursors.right.isDown) {
       this.player.setVelocityX(100);
+      this.player.setFlipX(false);
 
       // this.player.anims.play('right', true);
     } else {
@@ -174,10 +176,12 @@ export default class Game extends Phaser.Scene {
     if (onGround) {
       this.player.anims.play('turn');
     } else if (currentPlayerAnim !== 'sneezeJump') {
-      if (this.player.body.velocity.x > 0) {
-        this.player.anims.play('jumpRight');
+      if (this.player.body.velocity.x >= 0) {
+        this.player.anims.play('jump');
+        this.player.setFlipX(false);
       } else if (this.player.body.velocity.x < 0) {
-        this.player.anims.play('jumpLeft');
+        this.player.anims.play('jump');
+        this.player.setFlipX(true);
       }
     }
   }
@@ -185,9 +189,14 @@ export default class Game extends Phaser.Scene {
   sneezeJump() {
     this.player.setVelocityY(-225);
     this.sneeze.play();
-    // TODO(shin): Figure out how to flip animation based on velocity
     this.player.anims.stop();
     this.player.anims.play('sneezeJump');
+
+    if (this.player.body.velocity.x >= 0) {
+      this.player.setFlipX(false);
+    } else {
+      this.player.setFlipX(true);
+    }
   }
 
   hitSpike() {
@@ -196,8 +205,6 @@ export default class Game extends Phaser.Scene {
     }
 
     this.isHurt = true;
-
-    // TODO(shin): Check to see if zero hearts, end game/restart/etc.
 
     this.time.addEvent({
       delay: this.COOL_DOWN_TIMER,
@@ -212,5 +219,9 @@ export default class Game extends Phaser.Scene {
 
     const first = this.hearts.getChildren().pop();
     first.destroy();
+
+    if (this.hearts.getChildren().length == 0) {
+      this.scene.restart();
+    }
   }
 }

@@ -26,15 +26,8 @@ const createCharacterAnims = (anims) => {
   });
 
   anims.create({
-    key: 'jumpRight',
+    key: 'jump',
     frames: [{ key: 'sickHero', frame: 16 }],
-    frameRate: 10,
-    repeat: 0,
-  });
-
-  anims.create({
-    key: 'jumpLeft',
-    frames: [{ key: 'sickHero', frame: 20 }],
     frameRate: 10,
     repeat: 0,
   });
