@@ -13,9 +13,6 @@ const config = {
     },
   },
   scene: [Preloader, Game],
-  // scale: {
-  //   zoom: 0.8,
-  // },
 };
 
 new Phaser.Game(config);

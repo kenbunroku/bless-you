@@ -6,18 +6,13 @@ export default class Game extends Phaser.Scene {
     super('game');
 
     this.LIVES = 3;
-    this.COOL_DOWN_TIMER = 2000; // in milliseconds
+    this.COOL_DOWN_TIMER = 2000;
     this.isHurt = false;
 
     this.PLAYER_STARTING_LOCATION = {
       x: 520,
       y: 560,
     };
-
-    // this.PLAYER_STARTING_LOCATION = {
-    //   x: 350,
-    //   y: -100,
-    // };
   }
 
   preload() {
@@ -64,28 +59,21 @@ export default class Game extends Phaser.Scene {
       'sickHero'
     );
 
-    // Create a physics group - useful for colliding the player against all the spikes
     this.spikeGroup = this.physics.add.staticGroup();
 
-    // Loop over each Tile and replace spikes (tile index 77) with custom sprites
     this.spike.forEachTile((tile) => {
-      // A sprite has its origin at the center, so place the sprite at the center of the tile
       if (tile.index === 11) {
         const x = tile.getCenterX();
         const y = tile.getCenterY();
         const spikeTile = this.spikeGroup.create(x, y, 'spikeTile');
 
-        // The map has spike tiles that have been rotated in Tiled ("z" key), so parse out that angle
-        // to the correct body placement
         spikeTile.rotation = tile.rotation;
         if (spikeTile.angle === 0) spikeTile.body.setSize(32, 10);
 
-        // And lastly, remove the spike tile from the layer
         this.spike.removeTileAt(tile.x, tile.y);
       }
     });
 
-    // Add sound effects
     this.music = this.sound.add('bgm');
     this.jump = this.sound.add('jump');
     this.sneeze = this.sound.add('sneeze');
@@ -147,17 +135,9 @@ export default class Game extends Phaser.Scene {
     if (this.wasd.left.isDown || this.cursors.left.isDown) {
       this.player.setVelocityX(-100);
       this.player.setFlipX(true);
-
-      // this.player.anims.play('left', true);
     } else if (this.wasd.right.isDown || this.cursors.right.isDown) {
       this.player.setVelocityX(100);
       this.player.setFlipX(false);
-
-      // this.player.anims.play('right', true);
-    } else {
-      this.player.setVelocityX(0);
-
-      // this.player.anims.play('turn');
     }
 
     if ((this.wasd.up.isDown || this.cursors.up.isDown) && onGround) {
@@ -214,7 +194,6 @@ export default class Game extends Phaser.Scene {
       },
     });
 
-    // this.player.setBounce(0.7);
     this.player.setTint(0xff0000);
 
     const first = this.hearts.getChildren().pop();
