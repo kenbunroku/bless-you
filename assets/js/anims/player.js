@@ -1,25 +1,15 @@
 const createCharacterAnims = (anims) => {
   anims.create({
-    key: 'left',
-    frames: anims.generateFrameNumbers('sickHero', {
-      start: 6,
-      end: 8,
-    }),
-    frameRate: 10,
-    repeat: -1,
-  });
-
-  anims.create({
     key: 'turn',
     frames: [{ key: 'sickHero', frame: 1 }],
     frameRate: 20,
   });
 
   anims.create({
-    key: 'right',
+    key: 'walk',
     frames: anims.generateFrameNumbers('sickHero', {
-      start: 9,
-      end: 11,
+      start: 8,
+      end: 13,
     }),
     frameRate: 10,
     repeat: -1,

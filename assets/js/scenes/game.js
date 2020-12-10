@@ -59,6 +59,8 @@ export default class Game extends Phaser.Scene {
       'sickHero'
     );
 
+    
+
     this.spikeGroup = this.physics.add.staticGroup();
 
     this.spike.forEachTile((tile) => {
@@ -134,10 +136,12 @@ export default class Game extends Phaser.Scene {
 
     if (this.wasd.left.isDown || this.cursors.left.isDown) {
       this.player.setVelocityX(-100);
-      this.player.setFlipX(true);
+      this.player.setFlipX(false);
     } else if (this.wasd.right.isDown || this.cursors.right.isDown) {
       this.player.setVelocityX(100);
-      this.player.setFlipX(false);
+      this.player.setFlipX(true);
+    } else {
+      this.player.setVelocityX(0);
     }
 
     if ((this.wasd.up.isDown || this.cursors.up.isDown) && onGround) {
@@ -154,14 +158,23 @@ export default class Game extends Phaser.Scene {
     }
 
     if (onGround) {
-      this.player.anims.play('turn');
+      if (
+        this.wasd.left.isDown ||
+        this.cursors.left.isDown ||
+        this.wasd.right.isDown ||
+        this.cursors.right.isDown
+      ) {
+        this.player.anims.play('walk', true);
+      } else {
+        this.player.anims.play('turn');
+      }
     } else if (currentPlayerAnim !== 'sneezeJump') {
-      if (this.player.body.velocity.x >= 0) {
-        this.player.anims.play('jump');
-        this.player.setFlipX(false);
-      } else if (this.player.body.velocity.x < 0) {
+      if (this.player.body.velocity.x > 0) {
         this.player.anims.play('jump');
         this.player.setFlipX(true);
+      } else if (this.player.body.velocity.x <= 0) {
+        this.player.anims.play('jump');
+        this.player.setFlipX(false);
       }
     }
   }
