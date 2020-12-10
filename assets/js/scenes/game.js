@@ -6,11 +6,11 @@ export default class Game extends Phaser.Scene {
     super('game');
 
     this.LIVES = 3;
-    this.COOL_DOWN_TIMER = 2000;
+    this.COOL_DOWN_TIMER = 1000;
     this.isHurt = false;
 
     this.PLAYER_STARTING_LOCATION = {
-      x: 850,
+      x: 800,
       y: -800,
     };
   }
@@ -80,6 +80,8 @@ export default class Game extends Phaser.Scene {
     this.music = this.sound.add('bgm');
     this.jump = this.sound.add('jump');
     this.sneeze = this.sound.add('sneeze');
+    this.villainOuch = this.sound.add('villainOuch');
+    this.gameClear = this.sound.add('gameClear');
 
     this.music.play({
       mute: false,
@@ -100,7 +102,6 @@ export default class Game extends Phaser.Scene {
         stepX: 40,
       },
     });
-    console.log(this.isHurt);
 
     this.hearts.getChildren().forEach((heart) => {
       heart.setScrollFactor(0);
@@ -110,13 +111,25 @@ export default class Game extends Phaser.Scene {
     this.sneezeBar.setScrollFactor(0);
     this.sneezeBar.anims.play('sneezeBar', true);
 
+    this.gameClearText = this.add.text(800, -900, 'Game Clear!', {
+      fontSize: '32px',
+      fill: '#fff',
+    });
+    this.gameClearText.visible = false;
+
     this.cameras.main.startFollow(this.player, true, 0.09, 0.09);
     this.cameras.main.setZoom(1);
 
     this.physics.add.collider(this.player, ground);
     this.physics.add.collider(this.player, background);
     this.physics.add.collider(this.villain, background);
-    this.physics.add.collider(this.player, this.villain);
+    this.physics.add.collider(
+      this.player,
+      this.villain,
+      this.beatVillain,
+      null,
+      this
+    );
 
     this.time.addEvent({
       delay: 2000,
@@ -200,8 +213,8 @@ export default class Game extends Phaser.Scene {
     if (this.isHurt) {
       return;
     }
-
     this.isHurt = true;
+    this.player.setTint(0xff0000);
 
     this.time.addEvent({
       delay: this.COOL_DOWN_TIMER,
@@ -211,8 +224,6 @@ export default class Game extends Phaser.Scene {
       },
     });
 
-    this.player.setTint(0xff0000);
-
     const first = this.hearts.getChildren().pop();
     first.destroy();
 
@@ -221,5 +232,28 @@ export default class Game extends Phaser.Scene {
       this.scene.start('preloader');
       this.isHurt = false;
     }
+  }
+
+  beatVillain() {
+    this.villain.setVelocityX(300);
+    this.gameClearText.visible = true;
+    this.villainOuch.play();
+
+    this.time.addEvent({
+      delay: 1500,
+      callback: () => {
+        this.music.stop();
+        this.gameClear.play({
+          mute: false,
+          volume: 0.1,
+          rate: 1,
+          detune: 0,
+          seek: 0,
+          loop: false,
+          delay: 0,
+        });
+        gameOver = true;
+      },
+    });
   }
 }
