@@ -10,7 +10,7 @@ export default class Game extends Phaser.Scene {
     this.isHurt = false;
 
     this.PLAYER_STARTING_LOCATION = {
-      x: 800,
+      x: 850,
       y: -800,
     };
   }
@@ -62,7 +62,6 @@ export default class Game extends Phaser.Scene {
     this.villain = this.physics.add.sprite(950, -755, 'villain');
     this.kid = this.add.sprite(1000, -755, 'kid');
 
-
     this.spikeGroup = this.physics.add.staticGroup();
 
     this.spike.forEachTile((tile) => {
@@ -101,6 +100,7 @@ export default class Game extends Phaser.Scene {
         stepX: 40,
       },
     });
+    console.log(this.isHurt);
 
     this.hearts.getChildren().forEach((heart) => {
       heart.setScrollFactor(0);
@@ -217,7 +217,9 @@ export default class Game extends Phaser.Scene {
     first.destroy();
 
     if (this.hearts.getChildren().length == 0) {
-      this.scene.restart();
+      this.music.stop();
+      this.scene.start('preloader');
+      this.isHurt = false;
     }
   }
 }
