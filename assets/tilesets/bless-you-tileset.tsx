@@ -3,7 +3,7 @@
  <image source="aseprite/tileset.png" width="320" height="96"/>
  <tile id="0">
   <properties>
-   <property name="collisions" type="bool" value="false"/>
+   <property name="collisions" type="bool" value="true"/>
   </properties>
  </tile>
  <tile id="1">
@@ -13,17 +13,17 @@
  </tile>
  <tile id="2">
   <properties>
-   <property name="collisions" type="bool" value="false"/>
+   <property name="collisions" type="bool" value="true"/>
   </properties>
  </tile>
  <tile id="3">
   <properties>
-   <property name="collisions" type="bool" value="false"/>
+   <property name="collisions" type="bool" value="true"/>
   </properties>
  </tile>
  <tile id="4">
   <properties>
-   <property name="collisions" type="bool" value="false"/>
+   <property name="collisions" type="bool" value="true"/>
   </properties>
  </tile>
  <tile id="5">
@@ -78,7 +78,7 @@
  </tile>
  <tile id="10">
   <properties>
-   <property name="collisions" type="bool" value="false"/>
+   <property name="collisions" type="bool" value="true"/>
   </properties>
  </tile>
  <tile id="11">
@@ -88,12 +88,12 @@
  </tile>
  <tile id="12">
   <properties>
-   <property name="collisions" type="bool" value="false"/>
+   <property name="collisions" type="bool" value="true"/>
   </properties>
  </tile>
  <tile id="13">
   <properties>
-   <property name="collisions" type="bool" value="false"/>
+   <property name="collisions" type="bool" value="true"/>
   </properties>
  </tile>
  <tile id="14">
