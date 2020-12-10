@@ -10,8 +10,8 @@ export default class Game extends Phaser.Scene {
     this.isHurt = false;
 
     this.PLAYER_STARTING_LOCATION = {
-      x: 520,
-      y: 560,
+      x: 800,
+      y: -800,
     };
   }
 
@@ -59,7 +59,9 @@ export default class Game extends Phaser.Scene {
       'sickHero'
     );
 
-    
+    this.villain = this.physics.add.sprite(950, -755, 'villain');
+    this.kid = this.add.sprite(1000, -755, 'kid');
+
 
     this.spikeGroup = this.physics.add.staticGroup();
 
@@ -113,6 +115,8 @@ export default class Game extends Phaser.Scene {
 
     this.physics.add.collider(this.player, ground);
     this.physics.add.collider(this.player, background);
+    this.physics.add.collider(this.villain, background);
+    this.physics.add.collider(this.player, this.villain);
 
     this.time.addEvent({
       delay: 2000,

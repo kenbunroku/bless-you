@@ -35,6 +35,16 @@ const createCharacterAnims = (anims) => {
     frameRate: 2,
     repeat: -1,
   });
+
+  anims.create({
+    key: 'villain',
+    frames: [{ key: 'villain', frame: 1 }],
+  });
+
+  anims.create({
+    key: 'kid',
+    frames: [{ key: 'kid', frame: 1 }],
+  });
 };
 
 export { createCharacterAnims };

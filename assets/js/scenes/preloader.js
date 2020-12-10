@@ -20,6 +20,10 @@ export default class Preloader extends Phaser.Scene {
       frameWidth: 32,
       frameHeight: 32,
     });
+    this.load.spritesheet('kid', './assets/img/kid.png', {
+      frameWidth: 32,
+      frameHeight: 32,
+    });
     this.load.audio('bgm', [
       './assets/audio/bgm.ogg',
       './assets/audio/bgm.mp3',
