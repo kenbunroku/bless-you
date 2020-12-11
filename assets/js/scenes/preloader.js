@@ -36,6 +36,10 @@ export default class Preloader extends Phaser.Scene {
       './assets/audio/sneeze.ogg',
       './assets/audio/sneeze.mp3',
     ]);
+    this.load.audio('heroOuch', [
+      './assets/audio/hero-ouch.ogg',
+      './assets/audio/hero-ouch.mp3',
+    ]);
     this.load.audio('villainOuch', [
       './assets/audio/villain-ouch.ogg',
       './assets/audio/villain-ouch.mp3',

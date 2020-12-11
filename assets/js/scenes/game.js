@@ -10,8 +10,8 @@ export default class Game extends Phaser.Scene {
     this.isHurt = false;
 
     this.PLAYER_STARTING_LOCATION = {
-      x: 800,
-      y: -800,
+      x: 500,
+      y: 560,
     };
   }
 
@@ -80,12 +80,13 @@ export default class Game extends Phaser.Scene {
     this.music = this.sound.add('bgm');
     this.jump = this.sound.add('jump');
     this.sneeze = this.sound.add('sneeze');
+    this.heroOuch = this.sound.add('heroOuch');
     this.villainOuch = this.sound.add('villainOuch');
     this.gameClear = this.sound.add('gameClear');
 
     this.music.play({
       mute: false,
-      volume: 0.1,
+      volume: 0.05,
       rate: 1,
       detune: 0,
       seek: 0,
@@ -198,7 +199,15 @@ export default class Game extends Phaser.Scene {
 
   sneezeJump() {
     this.player.setVelocityY(-225);
-    this.sneeze.play();
+    this.sneeze.play({
+      mute: false,
+      volume: 0.3,
+      rate: 1,
+      detune: 0,
+      seek: 0,
+      loop: false,
+      delay: 0,
+    });
     this.player.anims.stop();
     this.player.anims.play('sneezeJump');
 
@@ -215,6 +224,7 @@ export default class Game extends Phaser.Scene {
     }
     this.isHurt = true;
     this.player.setTint(0xff0000);
+    this.heroOuch.play();
 
     this.time.addEvent({
       delay: this.COOL_DOWN_TIMER,
@@ -237,7 +247,15 @@ export default class Game extends Phaser.Scene {
   beatVillain() {
     this.villain.setVelocityX(300);
     this.gameClearText.visible = true;
-    this.villainOuch.play();
+    this.villainOuch.play({
+      mute: false,
+      volume: 0.5,
+      rate: 1,
+      detune: 0,
+      seek: 0,
+      loop: false,
+      delay: 0,
+    });
 
     this.time.addEvent({
       delay: 1500,
