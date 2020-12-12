@@ -270,7 +270,7 @@ export default class Game extends Phaser.Scene {
           loop: false,
           delay: 0,
         });
-        gameOver = true;
+        this.gameOver = true;
       },
     });
   }
